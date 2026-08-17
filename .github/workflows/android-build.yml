@@ -37,6 +37,11 @@ jobs:
           ndk-version: r16b
           link-to-sdk: true
 
+      - name: Install NDK r16b compatibility libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libncurses5
+
       - name: Build native library
         shell: bash
         run: |

@@ -26,7 +26,7 @@
 
 #define SAMP_VERSION	"0.3.7"
 #define PORT_VERSION	"1.0.0"
-#define SRV_IP "54.38.117.77"
+#define SRV_IP "65.108.36.172"
 #define MAX_IP_LENGTH 	strlen(SRV_IP)
 // #define DEBUG_MODE
 

@@ -157,7 +157,7 @@ void DoInitStuff()
 		{
 			if(!pNetGame)
 			{
-				pNetGame = new CNetGame(cryptor::create(SRV_IP, MAX_IP_LENGTH).decrypt(), 1485, "Dev_Weikton", nullptr);
+				pNetGame = new CNetGame(cryptor::create(SRV_IP, MAX_IP_LENGTH).decrypt(), 19396, "Dev_Weikton", nullptr);
                                 		}	
 			bNetworkInited = true;
 			return;

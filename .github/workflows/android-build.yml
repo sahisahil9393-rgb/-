@@ -1,0 +1,61 @@
+name: Android Native Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build armeabi-v7a native library
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Android NDK r16b
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r16b
+          link-to-sdk: true
+
+      - name: Build native library
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/obj build/libs
+          ndk-build \
+            NDK_PROJECT_PATH="$GITHUB_WORKSPACE" \
+            APP_BUILD_SCRIPT="$GITHUB_WORKSPACE/Android.mk" \
+            NDK_APPLICATION_MK="$GITHUB_WORKSPACE/Application.mk" \
+            NDK_OUT="$GITHUB_WORKSPACE/build/obj" \
+            NDK_LIBS_OUT="$GITHUB_WORKSPACE/build/libs" \
+            V=1
+          test -f build/libs/armeabi-v7a/libsamp.so
+          tar -czf build/samp-android-native.tar.gz -C build/libs .
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: samp-android-native-armeabi-v7a
+          path: build/samp-android-native.tar.gz
+          if-no-files-found: error
+          retention-days: 14

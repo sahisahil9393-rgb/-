@@ -42,8 +42,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libncurses5
 
-      - name: Normalize RakNet path for Linux
-        run: ln -s raknet vendor/RakNet
+      - name: Normalize case-sensitive paths for Linux
+        run: |
+          ln -s raknet vendor/RakNet
+          ln -s checkfilehash.h CheckFileHash.h
 
       - name: Build native library
         shell: bash

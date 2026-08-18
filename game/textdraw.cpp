@@ -1,5 +1,6 @@
 #include "../main.h"
 #include "game.h"
+#include "snapshothelper.h"
 #include "util.h"
 #include "RW/RenderWare.h"
 #include "gui/gui.h"

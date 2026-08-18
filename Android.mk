@@ -6,10 +6,16 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
+LOCAL_MODULE := bass
+LOCAL_SRC_FILES := build/bass/libs/armeabi-v7a/libbass.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+
 LOCAL_MODULE := samp
 LOCAL_LDLIBS := -llog
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/build/bass/c
-LOCAL_LDLIBS += -L$(LOCAL_PATH)/build/bass/libs/armeabi-v7a -lbass
+LOCAL_SHARED_LIBRARIES := bass
 
 # samp
 FILE_LIST := $(wildcard $(LOCAL_PATH)/*.cpp)

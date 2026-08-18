@@ -18,6 +18,8 @@ struct _ATOMIC_MODEL *ATOMIC_MODELS;
 
 uint8_t g_fps = 60;
 
+void ApplySCPatches();
+
 void ApplyRadarPatches()
 {
     FLog("ApplyRadarPatches");
@@ -261,7 +263,7 @@ void ApplySCPatches()
 	FLog("ApplySCAndPatches [0]");
 
 	uintptr_t g_libSCAnd = ARMHook::getLibraryAddress("libSCAnd.so");
-        ARMHook::unprotect(g_libSCAnd + 0x31C149, 1);
+        ARMHook::unprotect(g_libSCAnd + 0x31C149);
         *(bool*)(g_libSCAnd + 0x31C149) = true;
 	
         FLog("ApplySCAndPatches [libSCAnd.so wasted]");

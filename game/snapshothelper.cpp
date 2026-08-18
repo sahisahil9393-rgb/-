@@ -1,5 +1,6 @@
 #include "../main.h"
 #include "game.h"
+#include "snapshothelper.h"
 #include "RW/RenderWare.h"
 
 extern CGame *pGame;

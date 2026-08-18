@@ -82,96 +82,13 @@ uintptr_t CSnapShotHelper::CreateVehicleSnapShot(int iModel, uint32_t dwColor, V
 
 uintptr_t CSnapShotHelper::CreateObjectSnapShot(int iModel, uint32_t dwColor, VECTOR* vecRot, float fZoom)
 {
-	if (iModel == 1373 || iModel == 3118 || iModel == 3552 || iModel == 3553) {
-		iModel = 18631;
-	}
-
-	bool bNeedRemoveModel = false;
-	if (!pGame->IsModelLoaded(iModel))
-	{
-		pGame->RequestModel(iModel);
-		pGame->LoadRequestedModels();
-		while (!pGame->IsModelLoaded(iModel)) sleep(1);
-		bNeedRemoveModel = true;
-	}
-
-	uintptr_t pRwObject = ModelInfoCreateInstance(iModel);
-
-	float fRadius = GetModelColSphereRadius(iModel);
-
-	VECTOR vecCenter = { 0.0f, 0.0f, 0.0f };
-	GetModelColSphereVecCenter(iModel, &vecCenter);
-
-	uintptr_t parent = *(uintptr_t*)(pRwObject + 4);
-
-	if (parent == 0) {
-		return 0;
-	}
-
-	// RwFrameTranslate(RwFrame *,RwV3d const*,RwOpCombineType)	.text	001D8694	00000056	00000010	00000000	R	.	.	.	B	.	.
-	float v[3] = {
-		-vecCenter.X,
-		(-0.1f - fRadius * 2.25f) * fZoom,
-		50.0f - vecCenter.Z };
-	((void(*)(uintptr_t, float*, int))(g_GTASAAdr + 0x1D8694 + 1))(parent, v, 1);
-
-	// RwFrameRotate(RwFrame *,RwV3d const*,float,RwOpCombineType)	.text	001D87A8	00000056	00000010	00000000	R	.	.	.	B	.	.
-	if (iModel == 18631)
-		{
-			// RwFrameRotate X
-			v[0] = 0.0f;
-			v[1] = 0.0f;
-			v[2] = 1.0f;
-			((void(*)(uintptr_t, float*, float, int))(g_GTASAAdr + 0x1D87A8 + 1))(parent, v, 180.0f, 1);
-		}
-	else
-	{
-		if (vecRot->X != 0.0f)
-		{
-			// RwFrameRotate X
-			v[0] = 1.0f;
-			v[1] = 0.0f;
-			v[2] = 0.0f;
-			((void(*)(uintptr_t, float*, float, int))(g_GTASAAdr + 0x1D87A8 + 1))(parent, v, vecRot->X, 1);
-		}
-
-		if (vecRot->Y != 0.0f)
-		{
-			// RwFrameRotate Y
-			v[0] = 0.0f;
-			v[1] = 1.0f;
-			v[2] = 0.0f;
-			((void(*)(uintptr_t, float*, float, int))(g_GTASAAdr + 0x1D87A8 + 1))(parent, v, vecRot->Y, 1);
-		}
-
-		if (vecRot->Z != 0.0f)
-		{
-			// RwFrameRotate Z
-			v[0] = 0.0f;
-			v[1] = 0.0f;
-			v[2] = 1.0f;
-			((void(*)(uintptr_t, float*, float, int))(g_GTASAAdr + 0x1D87A8 + 1))(parent, v, vecRot->Z, 1);
-		}
-	}
-
-	uintptr_t raster = (uintptr_t)RwRasterCreate(256, 256, 32, rwRASTERFORMAT8888 | rwRASTERTYPECAMERATEXTURE);
-
-	// RwTextureCreate(RwRaster *)	.text	001DB83C	00000056	00000010	00000000	R	.	.	.	B	.	.
-	uintptr_t bufferTexture = ((uintptr_t(*)(uintptr_t))(g_GTASAAdr + 0x1DB83C + 1))(raster);
-	*(uintptr_t*)(m_camera + 0x60) = raster;
-
-	// CVisibilityPlugins::SetRenderWareCamera(RwCamera *)	.text	005D61F8	00000106	00000018	00000000	R	.	.	.	B	.	.
-	((void(*)(uintptr_t))(g_GTASAAdr + 0x5D61F8 + 1))(m_camera);
-
-	ProcessCamera(pRwObject, dwColor);
-
-	DestroyAtomicOrClump(pRwObject);
-
-	if (bNeedRemoveModel) {
-		pGame->RemoveModel(iModel, false);
-	}
-
-	return (uintptr_t)bufferTexture;
+// Object snapshots depend on game-specific helpers that are not part of this client.
+// Keep the feature disabled until those helpers are implemented for the target build.
+(void)iModel;
+(void)dwColor;
+(void)vecRot;
+(void)fZoom;
+return 0;
 }
 
 void CSnapShotHelper::ProcessCamera(uintptr_t pRwObject, uint32_t dwColor)

@@ -3,6 +3,7 @@
 #include "main.h"
 #include "game/game.h"
 #include "audiostream.h"
+#include "bass.h"
 
 char g_szAudioStreamUrl[256];
 float g_fAudioStreamX;
@@ -24,8 +25,8 @@ void *audioStreamThread(void *p)
 		bassStream = 0;
 	}
 
-	bassStream = BASS_StreamCreateURL(g_szAudioStreamUrl, 0, 9699328, 0);
-	BASS_ChannelPlay(bassStream);
+	bassStream = BASS_StreamCreateURL(g_szAudioStreamUrl, 0, 9699328, nullptr, nullptr);
+	BASS_ChannelPlay(bassStream, FALSE);
 
 	while ( !g_bAudioStreamStop ) {
 		usleep(2000);
@@ -44,7 +45,7 @@ void CAudioStream::Initialize()
 	bassStream = 0;
 	BASS_Free();
 
-	if ( BASS_Init(-1, 44100, 0) )
+	if ( BASS_Init(-1, 44100, 0, nullptr, nullptr) )
 	{
 		BASS_SetConfigPtr(16, "SA-MP/0.3");
 		BASS_SetConfig(21, 1);

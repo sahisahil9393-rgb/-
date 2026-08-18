@@ -47,6 +47,21 @@ jobs:
           ln -s raknet vendor/RakNet
           ln -s checkfilehash.h CheckFileHash.h
 
+      - name: Download official BASS Android SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/bass
+          curl --fail --location --retry 3 \
+            https://www.un4seen.com/files/bass24-android.zip \
+            --output build/bass24-android.zip
+          echo "236c9017728a910dfe74e79d36d98ad6784f3558c21e8812cfcbafe9bd0fef41  build/bass24-android.zip" | sha256sum --check --strict
+          unzip -q build/bass24-android.zip \
+            c/bass.h libs/armeabi-v7a/libbass.so \
+            -d build/bass
+          test -f build/bass/c/bass.h
+          test -f build/bass/libs/armeabi-v7a/libbass.so
+
       - name: Build native library
         shell: bash
         run: |

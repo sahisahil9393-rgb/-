@@ -8,6 +8,8 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := samp
 LOCAL_LDLIBS := -llog
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/build/bass/c
+LOCAL_LDLIBS += -L$(LOCAL_PATH)/build/bass/libs/armeabi-v7a -lbass
 
 # samp
 FILE_LIST := $(wildcard $(LOCAL_PATH)/*.cpp)

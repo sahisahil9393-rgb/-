@@ -1,0 +1,90 @@
+name: Android Native Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build armeabi-v7a native library
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Android NDK r16b
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r16b
+          link-to-sdk: true
+
+      - name: Install NDK r16b compatibility libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 180s sudo apt-get \
+            -o DPkg::Lock::Timeout=60 \
+            -o Acquire::Retries=3 \
+            install -y --no-install-recommends libncurses5
+
+      - name: Normalize case-sensitive paths for Linux
+        run: |
+          ln -s raknet vendor/RakNet
+          ln -s checkfilehash.h CheckFileHash.h
+
+      - name: Download official BASS Android SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/bass
+          curl --fail --location --retry 3 \
+            https://www.un4seen.com/files/bass24-android.zip \
+            --output build/bass24-android.zip
+          echo "236c9017728a910dfe74e79d36d98ad6784f3558c21e8812cfcbafe9bd0fef41  build/bass24-android.zip" | sha256sum --check --strict
+          unzip -q build/bass24-android.zip \
+            c/bass.h libs/armeabi-v7a/libbass.so \
+            -d build/bass
+          test -f build/bass/c/bass.h
+          test -f build/bass/libs/armeabi-v7a/libbass.so
+
+      - name: Build native library
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/obj build/libs
+          ndk-build \
+            NDK_PROJECT_PATH="$GITHUB_WORKSPACE" \
+            APP_BUILD_SCRIPT="$GITHUB_WORKSPACE/Android.mk" \
+            NDK_APPLICATION_MK="$GITHUB_WORKSPACE/Application.mk" \
+            NDK_OUT="$GITHUB_WORKSPACE/build/obj" \
+            NDK_LIBS_OUT="$GITHUB_WORKSPACE/build/libs" \
+            V=1
+          test -f build/libs/armeabi-v7a/libsamp.so
+          tar -czf build/samp-android-native.tar.gz -C build/libs .
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: samp-android-native-armeabi-v7a
+          path: build/samp-android-native.tar.gz
+          if-no-files-found: error
+          retention-days: 14

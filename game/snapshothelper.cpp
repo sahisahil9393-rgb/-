@@ -93,6 +93,9 @@ return 0;
 
 void CSnapShotHelper::ProcessCamera(uintptr_t pRwObject, uint32_t dwColor)
 {
+	// Snapshot rendering is disabled for this build: the original
+	// RenderClumpOrAtomic helper is not part of the current source tree.
+	(void)pRwObject;
 	// RwCameraClear(RwCamera *,RwRGBA *,int)	.text	001D5D70	0000001E	00000010	00000000	R	.	.	.	B	.	.
 	((void(*)(uintptr_t, uint32_t*, int))(g_GTASAAdr + 0x1D5D70 + 1))(m_camera, &dwColor, 3);
 
@@ -113,8 +116,6 @@ void CSnapShotHelper::ProcessCamera(uintptr_t pRwObject, uint32_t dwColor)
 
 	// DefinedState
 	((void(*)(void))(g_GTASAAdr + 0x5D0BC1))();
-
-	RenderClumpOrAtomic(pRwObject);
 
 	RwCameraEndUpdate((RwCamera*)m_camera);
 
